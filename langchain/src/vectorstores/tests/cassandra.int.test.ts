@@ -3,13 +3,13 @@ import { test, expect, describe } from "@jest/globals";
 
 import { CassandraStore } from "../cassandra.js";
 import { OpenAIEmbeddings } from "../../embeddings/openai.js";
-import { Document } from "../../document.js";
+import path from "path";
 
-// yarn test:single /langchain/src/vectorstores/tests/cassandra.int.test.ts
-describe.skip("CassandraStore", () => {
+describe("CassandraStore", () => {
   const cassandraConfig = {
     cloud: {
-      secureConnectBundle: process.env.CASSANDRA_SCB as string,
+      secureConnectBundle: (path.resolve("./") +
+        process.env.CASSANDRA_SCB) as string,
     },
     credentials: {
       username: "token",
@@ -28,6 +28,10 @@ describe.skip("CassandraStore", () => {
         type: "text",
       },
     ],
+    astraId: process.env.ASTRA_DB_ID,
+    astraRegion: process.env.ASTRA_DB_REGION,
+    astraKeyspace: process.env.ASTRA_DB_KEYSPACE,
+    astraApplicationToken: process.env.ASTRA_DB_APPLICATION_TOKEN,
   };
 
   test("CassandraStore.fromText", async () => {
@@ -42,16 +46,15 @@ describe.skip("CassandraStore", () => {
       cassandraConfig
     );
 
-    const results = await vectorStore.similaritySearch(
+    const results = await vectorStore.findVectorSearch(
       "Green yellow purple",
       1
     );
-    expect(results).toEqual([
-      new Document({
-        pageContent: "Green yellow purple",
-        metadata: { id: 1, name: "1" },
-      }),
-    ]);
+
+    expect(results.length).toEqual(1);
+    expect(results[0].text).toEqual("Green yellow purple");
+    expect(results[0].id).toEqual(1);
+    expect(results[0].name).toEqual("1");
   });
 
   test("CassandraStore.fromExistingIndex", async () => {
@@ -65,18 +68,15 @@ describe.skip("CassandraStore", () => {
       new OpenAIEmbeddings(),
       cassandraConfig
     );
-
     const vectorStore = await CassandraStore.fromExistingIndex(
       new OpenAIEmbeddings(),
       cassandraConfig
     );
+    const results = await vectorStore.findVectorSearch("Whats up", 1);
 
-    const results = await vectorStore.similaritySearch("Whats up", 1);
-    expect(results).toEqual([
-      new Document({
-        pageContent: "Whats up",
-        metadata: { id: 1, name: "1" },
-      }),
-    ]);
+    expect(results.length).toEqual(1);
+    expect(results[0].text).toEqual("Whats up");
+    expect(results[0].id).toEqual(1);
+    expect(results[0].name).toEqual("1");
   });
 });

@@ -4,6 +4,7 @@ import { Client as CassandraClient, DseClientOptions } from "cassandra-driver";
 import { Embeddings } from "../embeddings/base.js";
 import { VectorStore } from "./base.js";
 import { Document } from "../document.js";
+import axios from "axios";
 
 export interface Column {
   type: string;
@@ -16,6 +17,10 @@ export interface CassandraLibArgs extends DseClientOptions {
   dimensions: number;
   primaryKey: Column;
   metadataColumns: Column[];
+  astraId?: string;
+  astraRegion?: string;
+  astraKeyspace?: string;
+  astraApplicationToken?: string;
 }
 
 /**
@@ -30,6 +35,14 @@ export class CassandraStore extends VectorStore {
   private readonly dimensions: number;
 
   private readonly keyspace: string;
+
+  private readonly astraId: string | undefined;
+
+  private readonly astraRegion: string | undefined;
+
+  private readonly astraKeyspace: string | undefined;
+
+  private readonly astraApplicationToken: string | undefined;
 
   private primaryKey: Column;
 
@@ -52,6 +65,10 @@ export class CassandraStore extends VectorStore {
     this.table = args.table;
     this.primaryKey = args.primaryKey;
     this.metadataColumns = args.metadataColumns;
+    this.astraId = args.astraId;
+    this.astraRegion = args.astraRegion;
+    this.astraKeyspace = args.astraKeyspace;
+    this.astraApplicationToken = args.astraApplicationToken;
   }
 
   /**
@@ -68,9 +85,7 @@ export class CassandraStore extends VectorStore {
     if (!this.isInitialized) {
       await this.initialize();
     }
-
-    const queries = this.buildInsertQuery(vectors, documents);
-    await this.client.batch(queries);
+    await this.insertManyDocuments(vectors, documents);
   }
 
   /**
@@ -182,22 +197,11 @@ export class CassandraStore extends VectorStore {
    * @returns Promise that resolves when the database has been initialized.
    */
   private async initialize(): Promise<void> {
-    await this.client.execute(`CREATE TABLE IF NOT EXISTS ${this.keyspace}.${
-      this.table
-    } (
-      ${this.primaryKey.name} ${this.primaryKey.type} PRIMARY KEY,
-      text TEXT,
-      ${
-        this.metadataColumns.length > 0
-          ? this.metadataColumns.map((col) => `${col.name} ${col.type},`)
-          : ""
-      }
-      vector VECTOR<FLOAT, ${this.dimensions}>
-    );`);
+    const tables: string[] = await this.findCollection();
+    if (!tables.includes("test")) {
+      await this.createCollection();
+    }
 
-    await this.client
-      .execute(`CREATE CUSTOM INDEX IF NOT EXISTS idx_vector_${this.table}
-  ON ${this.keyspace}.${this.table}(vector) USING 'StorageAttachedIndex';`);
     this.isInitialized = true;
   }
 
@@ -219,13 +223,9 @@ export class CassandraStore extends VectorStore {
 
       const metadataColNames = Object.keys(document.metadata);
       const metadataVals = Object.values(document.metadata);
-      const metadataInsert =
-        metadataColNames.length > 0 ? ", " + metadataColNames.join(", ") : "";
-      const query = `INSERT INTO ${this.keyspace}.${
-        this.table
-      } (vector, text${metadataInsert}) VALUES ([${vector}], '${
-        document.pageContent
-      }'${
+      const query = `INSERT INTO ${this.keyspace}.${this.table} (vector, text${
+        metadataColNames.length > 0 ? ", " + metadataColNames.join(", ") : ""
+      }) VALUES ([${vector}], '${document.pageContent}'${
         metadataVals.length > 0
           ? ", " +
             metadataVals
@@ -249,5 +249,129 @@ export class CassandraStore extends VectorStore {
     return `SELECT * FROM ${this.keyspace}.${
       this.table
     } ORDER BY vector ANN OF [${query}] LIMIT ${k || 1};`;
+  }
+
+  private async findCollection(): Promise<string[]> {
+    let data = JSON.stringify({
+      findCollections: {},
+    });
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}`,
+      headers: {
+        "x-cassandra-token": this.astraApplicationToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const colection = await axios.request(config);
+    return colection?.data?.status?.collections;
+  }
+
+  private async createCollection(): Promise<string[]> {
+    const data = JSON.stringify({
+      createCollection: {
+        name: this.table,
+        options: {
+          vector: {
+            size: this.dimensions,
+            function: "cosine",
+          },
+        },
+      },
+    });
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}`,
+      headers: {
+        "x-cassandra-token": this.astraApplicationToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const colection = await axios.request(config);
+    return colection?.data;
+  }
+
+  private async insertManyDocuments(
+    vectors: number[][],
+    documents: Document[]
+  ): Promise<
+    {
+      id: any;
+      name: any;
+      text: string;
+      $vector: number[];
+    }[]
+  > {
+    const documnets: {
+      id: any;
+      name: any;
+      text: string;
+      $vector: number[];
+    }[] = [];
+    for (let index = 0; index < vectors.length; index += 1) {
+      const vector = vectors[index];
+      const document = documents[index];
+
+      documnets.push({
+        id: document?.metadata?.id,
+        name: document?.metadata?.name,
+        text: document.pageContent,
+        $vector: vector,
+      });
+    }
+
+    const data = JSON.stringify({
+      insertMany: {
+        documents: documnets,
+      },
+    });
+
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}/${this.table}`,
+      headers: {
+        "x-cassandra-token": this.astraApplicationToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    await axios.request(config);
+    return documnets;
+  }
+
+  async findVectorSearch(query: string, k: number) {
+    let data = JSON.stringify({
+      find: {
+        sort: {
+          $vector: await this.embeddings.embedQuery(query),
+        },
+        options: {
+          limit: k,
+        },
+      },
+    });
+
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}/${this.table}`,
+      headers: {
+        "x-cassandra-token": this.astraApplicationToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const colection = await axios.request(config);
+
+    return colection?.data?.data?.documents;
   }
 }
