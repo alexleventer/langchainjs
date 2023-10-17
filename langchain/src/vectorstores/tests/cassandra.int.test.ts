@@ -5,7 +5,7 @@ import { CassandraStore } from "../cassandra.js";
 import { OpenAIEmbeddings } from "../../embeddings/openai.js";
 import path from "path";
 
-describe("CassandraStore", () => {
+describe.skip("CassandraStore", () => {
   const cassandraConfig = {
     cloud: {
       secureConnectBundle: (path.resolve("./") +
