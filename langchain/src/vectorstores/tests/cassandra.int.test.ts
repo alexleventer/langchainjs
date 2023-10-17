@@ -28,10 +28,10 @@ describe.skip("CassandraStore", () => {
         type: "text",
       },
     ],
-    astraId: process.env.ASTRA_DB_ID,
-    astraRegion: process.env.ASTRA_DB_REGION,
-    astraKeyspace: process.env.ASTRA_DB_KEYSPACE,
-    astraApplicationToken: process.env.ASTRA_DB_APPLICATION_TOKEN,
+    astraId: process.env.ASTRA_DB_ID as string,
+    astraRegion: process.env.ASTRA_DB_REGION as string,
+    astraKeyspace: process.env.ASTRA_DB_KEYSPACE as string,
+    astraApplicationToken: process.env.ASTRA_DB_APPLICATION_TOKEN as string,
   };
 
   test("CassandraStore.fromText", async () => {
