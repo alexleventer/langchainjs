@@ -5,6 +5,7 @@ import { CassandraStore } from "../cassandra.js";
 import { OpenAIEmbeddings } from "../../embeddings/openai.js";
 import path from "path";
 
+// yarn test:single /langchain/src/vectorstores/tests/cassandra.int.test.ts
 describe.skip("CassandraStore", () => {
   const cassandraClientConfig = {
     cloud: {
@@ -18,6 +19,12 @@ describe.skip("CassandraStore", () => {
     keyspace: "test",
     dimensions: 1536,
     table: "test",
+    indices: [
+      {
+        name: "name",
+        value: "(name)",
+      },
+    ],
     primaryKey: {
       name: "id",
       type: "int",
@@ -44,6 +51,12 @@ describe.skip("CassandraStore", () => {
         type: "text",
       },
     ],
+    indices: [
+      {
+        name: "name",
+        value: "(name)",
+      },
+    ],
     astraId: process.env.ASTRA_DB_ID as string,
     astraRegion: process.env.ASTRA_DB_REGION as string,
     astraKeyspace: process.env.ASTRA_DB_KEYSPACE as string,
@@ -54,9 +67,9 @@ describe.skip("CassandraStore", () => {
     const vectorStore = await CassandraStore.fromTexts(
       ["I am blue", "Green yellow purple", "Hello there hello"],
       [
-        { id: 2, name: "2" },
-        { id: 1, name: "1" },
-        { id: 3, name: "3" },
+        { id: 2, name: "Alex" },
+        { id: 1, name: "Scott" },
+        { id: 3, name: "Bubba" },
       ],
       new OpenAIEmbeddings(),
       cassandraJsonApiConfig
@@ -70,16 +83,16 @@ describe.skip("CassandraStore", () => {
     expect(results.length).toEqual(1);
     expect(results[0].text).toEqual("Green yellow purple");
     expect(results[0].id).toEqual(1);
-    expect(results[0].name).toEqual("1");
+    expect(results[0].name).toEqual("Scott");
   });
 
   test("CassandraStore.fromText by cassandraClient", async () => {
     const vectorStore = await CassandraStore.fromTexts(
       ["I am blue", "Green yellow purple", "Hello there hello"],
       [
-        { id: 2, name: "2" },
-        { id: 1, name: "1" },
-        { id: 3, name: "3" },
+        { id: 2, name: "Alex" },
+        { id: 1, name: "Scott" },
+        { id: 3, name: "Bubba" },
       ],
       new OpenAIEmbeddings(),
       cassandraClientConfig
@@ -93,7 +106,7 @@ describe.skip("CassandraStore", () => {
     expect(results).toEqual([
       new Document({
         pageContent: "Green yellow purple",
-        metadata: { id: 1, name: "1" },
+        metadata: { id: 1, name: "Scott" },
       }),
     ]);
   });
@@ -102,9 +115,9 @@ describe.skip("CassandraStore", () => {
     await CassandraStore.fromTexts(
       ["Hey", "Whats up", "Hello"],
       [
-        { id: 2, name: "2" },
-        { id: 1, name: "1" },
-        { id: 3, name: "3" },
+        { id: 2, name: "Alex" },
+        { id: 1, name: "Scott" },
+        { id: 3, name: "Bubba" },
       ],
       new OpenAIEmbeddings(),
       cassandraJsonApiConfig
@@ -118,16 +131,16 @@ describe.skip("CassandraStore", () => {
     expect(results.length).toEqual(1);
     expect(results[0].text).toEqual("Whats up");
     expect(results[0].id).toEqual(1);
-    expect(results[0].name).toEqual("1");
+    expect(results[0].name).toEqual("Scott");
   });
 
   test("CassandraStore.fromExistingIndex by cassandraClient", async () => {
     await CassandraStore.fromTexts(
       ["Hey", "Whats up", "Hello"],
       [
-        { id: 2, name: "2" },
-        { id: 1, name: "1" },
-        { id: 3, name: "3" },
+        { id: 2, name: "Alex" },
+        { id: 1, name: "Scott" },
+        { id: 3, name: "Bubba" },
       ],
       new OpenAIEmbeddings(),
       cassandraClientConfig
@@ -141,7 +154,35 @@ describe.skip("CassandraStore", () => {
     expect(results).toEqual([
       new Document({
         pageContent: "Whats up",
-        metadata: { id: 1, name: "1" },
+        metadata: { id: 1, name: "Scott" },
+      }),
+    ]);
+  });
+
+  test("CassandraStore.fromExistingIndex (with filter)", async () => {
+    await CassandraStore.fromTexts(
+      ["Hey", "Whats up", "Hello"],
+      [
+        { id: 2, name: "Alex" },
+        { id: 1, name: "Scott" },
+        { id: 3, name: "Bubba" },
+      ],
+      new OpenAIEmbeddings(),
+      cassandraClientConfig
+    );
+
+    const vectorStore = await CassandraStore.fromExistingIndex(
+      new OpenAIEmbeddings(),
+      cassandraClientConfig
+    );
+
+    const results = await vectorStore.similaritySearch("H", 1, {
+      name: "Bubba",
+    });
+    expect(results).toEqual([
+      new Document({
+        pageContent: "Hello",
+        metadata: { id: 3, name: "Bubba" },
       }),
     ]);
   });
