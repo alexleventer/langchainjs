@@ -1,22 +1,26 @@
 import * as uuid from "uuid";
 
+import { BaseRetriever, BaseRetrieverInput } from "../schema/retriever.js";
 import { Document } from "../document.js";
 import { VectorStore } from "../vectorstores/base.js";
+import { Docstore } from "../schema/index.js";
 import { TextSplitter } from "../text_splitter.js";
-import {
-  MultiVectorRetriever,
-  type MultiVectorRetrieverInput,
-} from "./multi_vector.js";
 
 /**
  * Interface for the fields required to initialize a
  * ParentDocumentRetriever instance.
  */
-export type ParentDocumentRetrieverFields = MultiVectorRetrieverInput & {
+export interface ParentDocumentRetrieverFields extends BaseRetrieverInput {
+  vectorstore: VectorStore;
+  docstore: Docstore;
   childSplitter: TextSplitter;
   parentSplitter?: TextSplitter;
-};
+  idKey?: string;
+  childK?: number;
+  parentK?: number;
+}
 
+// TODO: Change this to subclass MultiVectorRetriever
 /**
  * A type of document retriever that splits input documents into smaller chunks
  * while separately storing and preserving the original documents.
@@ -26,14 +30,16 @@ export type ParentDocumentRetrieverFields = MultiVectorRetrieverInput & {
  * This strikes a balance between better targeted retrieval with small documents
  * and the more context-rich larger documents.
  */
-export class ParentDocumentRetriever extends MultiVectorRetriever {
+export class ParentDocumentRetriever extends BaseRetriever {
   static lc_name() {
     return "ParentDocumentRetriever";
   }
 
   lc_namespace = ["langchain", "retrievers", "parent_document"];
 
-  vectorstore: VectorStore;
+  protected vectorstore: VectorStore;
+
+  protected docstore: Docstore;
 
   protected childSplitter: TextSplitter;
 
@@ -66,11 +72,12 @@ export class ParentDocumentRetriever extends MultiVectorRetriever {
       }
     }
     const parentDocs: Document[] = [];
-    const storedParentDocs = await this.docstore.mget(parentDocIds);
-    const retrievedDocs: Document[] = storedParentDocs.filter(
-      (doc?: Document): doc is Document => doc !== undefined
-    );
-    parentDocs.push(...retrievedDocs);
+    for (const parentDocId of parentDocIds) {
+      const parentDoc = await this.docstore.search(parentDocId);
+      if (parentDoc !== undefined) {
+        parentDocs.push(parentDoc);
+      }
+    }
     return parentDocs.slice(0, this.parentK);
   }
 
@@ -131,7 +138,7 @@ export class ParentDocumentRetriever extends MultiVectorRetriever {
     }
     await this.vectorstore.addDocuments(embeddedDocs);
     if (addToDocstore) {
-      await this.docstore.mset(Object.entries(fullDocs));
+      await this.docstore.add(fullDocs);
     }
   }
 }

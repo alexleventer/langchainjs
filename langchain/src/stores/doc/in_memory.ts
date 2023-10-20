@@ -1,15 +1,11 @@
 import { Document } from "../../document.js";
 import { Docstore } from "../../schema/index.js";
-import { BaseStoreInterface } from "../../schema/storage.js";
 
 /**
  * Class for storing and retrieving documents in memory asynchronously.
  * Extends the Docstore class.
  */
-export class InMemoryDocstore
-  extends Docstore
-  implements BaseStoreInterface<string, Document>
-{
+export class InMemoryDocstore extends Docstore {
   _docs: Map<string, Document>;
 
   constructor(docs?: Map<string, Document>) {
@@ -47,25 +43,6 @@ export class InMemoryDocstore
     for (const [key, value] of Object.entries(texts)) {
       this._docs.set(key, value);
     }
-  }
-
-  async mget(keys: string[]): Promise<Document[]> {
-    return Promise.all(keys.map((key) => this.search(key)));
-  }
-
-  async mset(keyValuePairs: [string, Document][]): Promise<void> {
-    await Promise.all(
-      keyValuePairs.map(([key, value]) => this.add({ [key]: value }))
-    );
-  }
-
-  async mdelete(_keys: string[]): Promise<void> {
-    throw new Error("Not implemented.");
-  }
-
-  // eslint-disable-next-line require-yield
-  async *yieldKeys(_prefix?: string): AsyncGenerator<string> {
-    throw new Error("Not implemented");
   }
 }
 

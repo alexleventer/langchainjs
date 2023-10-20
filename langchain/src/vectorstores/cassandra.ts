@@ -11,13 +11,6 @@ export interface Column {
   name: string;
 }
 
-export interface Index {
-  name: string;
-  value: string;
-}
-
-export type CassandraVectorStoreFilterType = string[];
-
 export interface CassandraLibArgs extends DseClientOptions {
   table: string;
   keyspace: string;
@@ -28,7 +21,6 @@ export interface CassandraLibArgs extends DseClientOptions {
   astraRegion?: string;
   astraKeyspace?: string;
   astraApplicationToken?: string;
-  indices: Index[];
 }
 
 /**
@@ -57,8 +49,6 @@ export class CassandraStore extends VectorStore {
   private metadataColumns: Column[];
 
   private readonly table: string;
-
-  private indices: Index[];
 
   private isInitialized = false;
 
@@ -95,7 +85,6 @@ export class CassandraStore extends VectorStore {
       this.astraApplicationToken = args?.astraApplicationToken;
       this.isJsonApiConnection = true;
     }
-    this.indices = args.indices;
   }
 
   /**
@@ -137,19 +126,17 @@ export class CassandraStore extends VectorStore {
    * Method to search for vectors that are similar to a given query vector.
    * @param query The query vector.
    * @param k The number of similar vectors to return.
-   * @param filter
    * @returns Promise that resolves with an array of tuples, each containing a Document and a score.
    */
   async similaritySearchVectorWithScore(
     query: number[],
-    k: number,
-    filter?: CassandraVectorStoreFilterType
+    k: number
   ): Promise<[Document, number][]> {
     if (!this.isInitialized) {
       await this.initialize();
     }
 
-    const queryStr = this.buildSearchQuery(query, k, filter);
+    const queryStr = this.buildSearchQuery(query, k);
     const queryResultSet = await this.client.execute(queryStr);
 
     return queryResultSet?.rows.map((row, index) => {
@@ -277,13 +264,9 @@ export class CassandraStore extends VectorStore {
 
       const metadataColNames = Object.keys(document.metadata);
       const metadataVals = Object.values(document.metadata);
-      const metadataInsert =
-        metadataColNames.length > 0 ? ", " + metadataColNames.join(", ") : "";
-      const query = `INSERT INTO ${this.keyspace}.${
-        this.table
-      } (vector, text${metadataInsert}) VALUES ([${vector}], '${
-        document.pageContent
-      }'${
+      const query = `INSERT INTO ${this.keyspace}.${this.table} (vector, text${
+        metadataColNames.length > 0 ? ", " + metadataColNames.join(", ") : ""
+      }) VALUES ([${vector}], '${document.pageContent}'${
         metadataVals.length > 0
           ? ", " +
             metadataVals
@@ -296,29 +279,17 @@ export class CassandraStore extends VectorStore {
     return queries;
   }
 
-  private buildWhereClause(filter: CassandraVectorStoreFilterType): string {
-    const whereClause = Object.entries(filter)
-      .map(([key, value]) => `${key} = '${value}'`)
-      .join(" AND ");
-    return `WHERE ${whereClause}`;
-  }
-
   /**
    * Method to build an CQL query for searching for similar vectors in the
    * Cassandra database.
    * @param query The query vector.
    * @param k The number of similar vectors to return.
-   * @param filter
    * @returns The CQL query string.
    */
-  private buildSearchQuery(
-    query: number[],
-    k: number = 1,
-    filter?: CassandraVectorStoreFilterType
-  ): string {
-    const whereClause = filter ? this.buildWhereClause(filter) : "";
-
-    return `SELECT * FROM ${this.keyspace}.${this.table} ${whereClause} ORDER BY vector ANN OF [${query}] LIMIT ${k}`;
+  private buildSearchQuery(query: number[], k: number): string {
+    return `SELECT * FROM ${this.keyspace}.${
+      this.table
+    } ORDER BY vector ANN OF [${query}] LIMIT ${k || 1};`;
   }
 
   private async findCollection(): Promise<string[]> {
