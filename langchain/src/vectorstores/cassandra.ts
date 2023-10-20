@@ -52,23 +52,39 @@ export class CassandraStore extends VectorStore {
 
   private isInitialized = false;
 
+  private isJsonApiConnection = false;
+
   _vectorstoreType(): string {
     return "cassandra";
   }
 
   constructor(embeddings: Embeddings, args: CassandraLibArgs) {
     super(embeddings, args);
+    if (
+      args?.cloud?.secureConnectBundle &&
+      args?.credentials?.username &&
+      args?.credentials?.password
+    ) {
+      this.client = new CassandraClient(args);
+    }
 
-    this.client = new CassandraClient(args);
     this.dimensions = args.dimensions;
     this.keyspace = args.keyspace;
     this.table = args.table;
     this.primaryKey = args.primaryKey;
     this.metadataColumns = args.metadataColumns;
-    this.astraId = args.astraId;
-    this.astraRegion = args.astraRegion;
-    this.astraKeyspace = args.astraKeyspace;
-    this.astraApplicationToken = args.astraApplicationToken;
+    if (
+      args?.astraId &&
+      args?.astraRegion &&
+      args?.astraKeyspace &&
+      args?.astraApplicationToken
+    ) {
+      this.astraId = args?.astraId;
+      this.astraRegion = args?.astraRegion;
+      this.astraKeyspace = args?.astraKeyspace;
+      this.astraApplicationToken = args?.astraApplicationToken;
+      this.isJsonApiConnection = true;
+    }
   }
 
   /**
@@ -84,6 +100,12 @@ export class CassandraStore extends VectorStore {
 
     if (!this.isInitialized) {
       await this.initialize();
+    }
+    if (!this.isJsonApiConnection) {
+      const queries = this.buildInsertQuery(vectors, documents);
+
+      await this.client.batch(queries);
+      return;
     }
     await this.insertManyDocuments(vectors, documents);
   }
@@ -197,6 +219,25 @@ export class CassandraStore extends VectorStore {
    * @returns Promise that resolves when the database has been initialized.
    */
   private async initialize(): Promise<void> {
+    if (!this.isJsonApiConnection) {
+      await this.client.execute(`CREATE TABLE IF NOT EXISTS ${this.keyspace}.${
+        this.table
+      } (
+        ${this.primaryKey.name} ${this.primaryKey.type} PRIMARY KEY,
+        text TEXT,
+        ${
+          this.metadataColumns.length > 0
+            ? this.metadataColumns.map((col) => `${col.name} ${col.type},`)
+            : ""
+        }
+        vector VECTOR<FLOAT, ${this.dimensions}>
+      );`);
+
+      await this.client.execute(
+        `CREATE CUSTOM INDEX IF NOT EXISTS idx_vector_${this.table} ON ${this.keyspace}.${this.table}(vector) USING 'StorageAttachedIndex';`
+      );
+      return;
+    }
     const tables: string[] = await this.findCollection();
     if (!tables.includes("test")) {
       await this.createCollection();
