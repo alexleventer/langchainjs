@@ -8,16 +8,17 @@ sidebar_class_name: node-only
 Only available on Node.js.
 :::
 
-
 [Apache Cassandra®](https://cassandra.apache.org/_/index.html) is a NoSQL, row-oriented, highly scalable and highly available database.
 
-The [latest version](https://cwiki.apache.org/confluence/display/CASSANDRA/CEP-30%3A+Approximate+Nearest+Neighbor(ANN)+Vector+Search+via+Storage-Attached+Indexes) of Apache Cassandra natively supports Vector Similarity Search.
+The [latest version](<https://cwiki.apache.org/confluence/display/CASSANDRA/CEP-30%3A+Approximate+Nearest+Neighbor(ANN)+Vector+Search+via+Storage-Attached+Indexes>) of Apache Cassandra natively supports Vector Similarity Search.
 
 ## Setup
+
 1. Create an [Astra DB account](https://astra.datastax.com/register).
 2. Create a [vector enabled database](https://astra.datastax.com/createDatabase).
-3. Download your secure connect bundle and application token on your database's "Connect" tab.
-4. Set up the following env vars:
+3. If you want to use Json Api then skip next 3 steps and continue with step 7.
+4. Download your secure connect bundle and application token on your database's "Connect" tab.
+5. Set up the following env vars:
 
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
@@ -25,41 +26,58 @@ export CASSANDRA_SCB=YOUR_CASSANDRA_SCB_HERE
 export CASSANDRA_TOKEN=YOUR_CASSANDRA_TOKEN_HERE
 ```
 
-5. Install the Cassandra Node.js driver.
+6. Install the Cassandra Node.js driver.
 
 ```bash npm2yarn
 npm install cassandra-driver
 ```
 
+7. Set up the following env vars:
+
+```bash
+export ASTRA_DB_ID=ADD_YOURS_HERE
+export ASTRA_DB_REGION=ADD_YOURS_HERE
+export ASTRA_DB_KEYSPACE=ADD_YOURS_HERE
+export ASTRA_DB_APPLICATION_TOKEN=ADD_YOURS_HERE
+```
+
 ## Index and query docs
+
+### Using client connection
 
 ```typescript
 import { CassandraStore } from "langchain/vectorstores/cassandra";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
-
-const config = {
-   cloud: {
-     secureConnectBundle: process.env.CASSANDRA_SCB as string,
-   },
-   credentials: {
-     username: "token",
-     password: process.env.CASSANDRA_TOKEN as string,
-   },
-   keyspace: "test",
-   dimensions: 1536,
-   table: "test",
-   primaryKey: {
-     name: "id",
-     type: "int",
-   },
-   metadataColumns: [
-     {
-       name: "name",
-       type: "text",
-     },
-   ],
- };
+const cassandraClientConfig = {
+  cloud: {
+    secureConnectBundle: (path.resolve("./") +
+      process.env.CASSANDRA_SCB) as string,
+  },
+  credentials: {
+    username: "token",
+    password: process.env.CASSANDRA_TOKEN as string,
+  },
+  keyspace: "test",
+  dimensions: 1536,
+  table: "test",
+  indices: [
+    {
+      name: "name",
+      value: "(name)",
+    },
+  ],
+  primaryKey: {
+    name: "id",
+    type: "int",
+  },
+  metadataColumns: [
+    {
+      name: "name",
+      type: "text",
+    },
+  ],
+};
 
 const vectorStore = await CassandraStore.fromTexts(
   ["I am blue", "Green yellow purple", "Hello there hello"],
@@ -69,11 +87,54 @@ const vectorStore = await CassandraStore.fromTexts(
     { id: 3, name: "3" },
   ],
   new OpenAIEmbeddings(),
-  cassandraConfig
+  cassandraClientConfig
 );
 
-const results = await vectorStore.similaritySearch(
-  "Green yellow purple",
-  1
+const results = await vectorStore.similaritySearch("Green yellow purple", 1);
+```
+
+### Using Json_Api
+
+```typescript
+import { CassandraStore } from "langchain/vectorstores/cassandra";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+
+const cassandraJsonApiConfig = {
+  keyspace: "test",
+  dimensions: 1536,
+  table: "test_jsonapi",
+  primaryKey: {
+    name: "id",
+    type: "int",
+  },
+  metadataColumns: [
+    {
+      name: "name",
+      type: "text",
+    },
+  ],
+  indices: [
+    {
+      name: "name",
+      value: "(name)",
+    },
+  ],
+  astraId: process.env.ASTRA_DB_ID as string,
+  astraRegion: process.env.ASTRA_DB_REGION as string,
+  astraKeyspace: process.env.ASTRA_DB_KEYSPACE as string,
+  astraApplicationToken: process.env.ASTRA_DB_APPLICATION_TOKEN as string,
+};
+
+const vectorStore = await CassandraStore.fromTexts(
+  ["I am blue", "Green yellow purple", "Hello there hello"],
+  [
+    { id: 2, name: "2" },
+    { id: 1, name: "1" },
+    { id: 3, name: "3" },
+  ],
+  new OpenAIEmbeddings(),
+  cassandraJsonApiConfig
 );
+
+const results = await vectorStore.findVectorSearch("Green yellow purple", 1);
 ```

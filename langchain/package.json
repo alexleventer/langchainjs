@@ -771,7 +771,7 @@
     "@xenova/transformers": "^2.5.4",
     "@zilliz/milvus2-sdk-node": ">=2.2.11",
     "apify-client": "^2.7.1",
-    "axios": "^1.5.1",
+    "axios": "0.26.0",
     "cassandra-driver": "^4.6.4",
     "cheerio": "^1.0.0-rc.12",
     "chromadb": "^1.5.3",
@@ -882,6 +882,7 @@
     "@xenova/transformers": "^2.5.4",
     "@zilliz/milvus2-sdk-node": ">=2.2.7",
     "apify-client": "^2.7.1",
+    "axios": "*",
     "cassandra-driver": "^4.6.4",
     "cheerio": "^1.0.0-rc.12",
     "chromadb": "*",
@@ -1061,6 +1062,9 @@
     "apify-client": {
       "optional": true
     },
+    "axios": {
+      "optional": true
+    },
     "cassandra-driver": {
       "optional": true
     },
@@ -1200,7 +1204,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.6.2",
     "ansi-styles": "^5.0.0",
-    "axios": "1.5.1",
     "binary-extensions": "^2.2.0",
     "camelcase": "6",
     "decamelize": "^1.2.0",

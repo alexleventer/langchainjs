@@ -1,10 +1,9 @@
 /* eslint-disable prefer-template */
 import { Client as CassandraClient, DseClientOptions } from "cassandra-driver";
-
 import { Embeddings } from "../embeddings/base.js";
 import { VectorStore } from "./base.js";
 import { Document } from "../document.js";
-import axios from "axios";
+import axiosMod, { AxiosRequestConfig } from "axios";
 
 export interface Column {
   type: string;
@@ -112,7 +111,7 @@ export class CassandraStore extends VectorStore {
     if (!this.isInitialized) {
       await this.initialize();
     }
-    if (!this.isJsonApiConnection) {
+    if (!this.isJsonApiConnection && this.client) {
       const queries = this.buildInsertQuery(vectors, documents);
 
       await this.client.batch(queries);
@@ -232,7 +231,7 @@ export class CassandraStore extends VectorStore {
    * @returns Promise that resolves when the database has been initialized.
    */
   private async initialize(): Promise<void> {
-    if (!this.isJsonApiConnection) {
+    if (!this.isJsonApiConnection && this.client) {
       await this.client.execute(`CREATE TABLE IF NOT EXISTS ${this.keyspace}.${
         this.table
       } (
@@ -331,18 +330,18 @@ export class CassandraStore extends VectorStore {
     let data = JSON.stringify({
       findCollections: {},
     });
-    const config = {
+    const config: AxiosRequestConfig = {
       method: "post",
       maxBodyLength: Infinity,
       url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}`,
       headers: {
-        "x-cassandra-token": this.astraApplicationToken,
+        "x-cassandra-token": this.astraApplicationToken ?? "",
         "Content-Type": "application/json",
       },
       data: data,
     };
 
-    const colection = await axios.request(config);
+    const colection = await axiosMod.default.request(config);
     return colection?.data?.status?.collections;
   }
 
@@ -358,18 +357,18 @@ export class CassandraStore extends VectorStore {
         },
       },
     });
-    const config = {
+    const config: AxiosRequestConfig = {
       method: "post",
       maxBodyLength: Infinity,
       url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}`,
       headers: {
-        "x-cassandra-token": this.astraApplicationToken,
+        "x-cassandra-token": this.astraApplicationToken ?? "",
         "Content-Type": "application/json",
       },
       data: data,
     };
 
-    const colection = await axios.request(config);
+    const colection = await axiosMod.default.request(config);
     return colection?.data;
   }
 
@@ -408,18 +407,18 @@ export class CassandraStore extends VectorStore {
       },
     });
 
-    const config = {
+    const config: AxiosRequestConfig = {
       method: "post",
       maxBodyLength: Infinity,
       url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}/${this.table}`,
       headers: {
-        "x-cassandra-token": this.astraApplicationToken,
+        "x-cassandra-token": this.astraApplicationToken ?? "",
         "Content-Type": "application/json",
       },
       data: data,
     };
 
-    await axios.request(config);
+    await axiosMod.default.request(config);
     return documnets;
   }
 
@@ -435,18 +434,18 @@ export class CassandraStore extends VectorStore {
       },
     });
 
-    const config = {
+    const config: AxiosRequestConfig = {
       method: "post",
       maxBodyLength: Infinity,
       url: `https://${this.astraId}-${this.astraRegion}.apps.astra.datastax.com/api/json/v1/${this.astraKeyspace}/${this.table}`,
       headers: {
-        "x-cassandra-token": this.astraApplicationToken,
+        "x-cassandra-token": this.astraApplicationToken ?? "",
         "Content-Type": "application/json",
       },
       data: data,
     };
 
-    const colection = await axios.request(config);
+    const colection = await axiosMod.default.request(config);
 
     return colection?.data?.data?.documents;
   }
