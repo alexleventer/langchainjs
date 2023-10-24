@@ -1,4 +1,5 @@
 import { CallbackManagerForChainRun } from "langchain/callbacks";
+import { BaseChain as _ } from "langchain/chains";
 import { BaseMemory } from "langchain/memory";
 import { ChainValues } from "langchain/schema";
 

@@ -11,6 +11,7 @@ import { StringOutputParser } from "langchain/schema/output_parser";
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
+  PromptTemplate,
   SystemMessagePromptTemplate,
 } from "langchain/prompts";
 import { ChatOpenAI } from "langchain/chat_models/openai";

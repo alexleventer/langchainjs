@@ -6,42 +6,32 @@ import { BedrockRuntimeClient } from "@aws-sdk/client-bedrock-runtime";
 import { HNSWLib } from "../../vectorstores/hnswlib.js";
 import { BedrockEmbeddings } from "../bedrock.js";
 
-const getClient = () => {
-  if (
-    !process.env.BEDROCK_AWS_REGION ||
-    !process.env.BEDROCK_AWS_ACCESS_KEY_ID ||
-    !process.env.BEDROCK_AWS_SECRET_ACCESS_KEY
-  ) {
-    throw new Error("Missing environment variables for AWS");
-  }
-
-  const client = new BedrockRuntimeClient({
-    region: process.env.BEDROCK_AWS_REGION,
-    credentials: {
-      accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY,
-    },
-  });
-
-  return client;
-};
+const client = new BedrockRuntimeClient({
+  region: process.env.BEDROCK_AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY!,
+  },
+});
 
 test("Test BedrockEmbeddings.embedQuery", async () => {
-  const client = getClient();
   const embeddings = new BedrockEmbeddings({
     maxRetries: 1,
     client,
   });
   const res = await embeddings.embedQuery("Hello world");
-  // console.log(res);
+  console.log(res);
   expect(typeof res[0]).toBe("number");
 });
 
 test("Test BedrockEmbeddings.embedDocuments with passed region and credentials", async () => {
-  const client = getClient();
   const embeddings = new BedrockEmbeddings({
     maxRetries: 1,
-    client,
+    region: process.env.BEDROCK_AWS_REGION!,
+    credentials: {
+      accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY!,
+    },
   });
   const res = await embeddings.embedDocuments([
     "Hello world",
@@ -51,7 +41,7 @@ test("Test BedrockEmbeddings.embedDocuments with passed region and credentials",
     "six documents",
     "to test pagination",
   ]);
-  // console.log(res);
+  console.log(res);
   expect(res).toHaveLength(6);
   res.forEach((r) => {
     expect(typeof r[0]).toBe("number");
@@ -59,7 +49,6 @@ test("Test BedrockEmbeddings.embedDocuments with passed region and credentials",
 });
 
 test("Test end to end with HNSWLib", async () => {
-  const client = getClient();
   const vectorStore = await HNSWLib.fromTexts(
     ["Hello world", "Bye bye", "hello nice world"],
     [{ id: 2 }, { id: 1 }, { id: 3 }],

@@ -56,7 +56,6 @@ const entrypoints = {
   "llms/openai": "llms/openai",
   "llms/ai21": "llms/ai21",
   "llms/aleph_alpha": "llms/aleph_alpha",
-  "llms/cloudflare_workersai": "llms/cloudflare_workersai",
   "llms/cohere": "llms/cohere",
   "llms/hf": "llms/hf",
   "llms/raycast": "llms/raycast",
@@ -71,8 +70,6 @@ const entrypoints = {
   "llms/llama_cpp": "llms/llama_cpp",
   "llms/writer": "llms/writer",
   "llms/portkey": "llms/portkey",
-  "llms/yandex": "llms/yandex",
-  "llms/fake": "llms/fake",
   // prompts
   prompts: "prompts/index",
   "prompts/load": "prompts/load",
@@ -83,8 +80,6 @@ const entrypoints = {
   "vectorstores/elasticsearch": "vectorstores/elasticsearch",
   "vectorstores/memory": "vectorstores/memory",
   "vectorstores/cloudflare_vectorize": "vectorstores/cloudflare_vectorize",
-  "vectorstores/closevector/web": "vectorstores/closevector/web",
-  "vectorstores/closevector/node": "vectorstores/closevector/node",
   "vectorstores/chroma": "vectorstores/chroma",
   "vectorstores/googlevertexai": "vectorstores/googlevertexai",
   "vectorstores/hnswlib": "vectorstores/hnswlib",
@@ -100,7 +95,6 @@ const entrypoints = {
   "vectorstores/opensearch": "vectorstores/opensearch",
   "vectorstores/pgvector": "vectorstores/pgvector",
   "vectorstores/milvus": "vectorstores/milvus",
-  "vectorstores/neo4j_vector": "vectorstores/neo4j_vector",
   "vectorstores/prisma": "vectorstores/prisma",
   "vectorstores/typeorm": "vectorstores/typeorm",
   "vectorstores/myscale": "vectorstores/myscale",
@@ -176,7 +170,6 @@ const entrypoints = {
   "chat_models/portkey": "chat_models/portkey",
   "chat_models/anthropic": "chat_models/anthropic",
   "chat_models/bedrock": "chat_models/bedrock",
-  "chat_models/cloudflare_workersai": "chat_models/cloudflare_workersai",
   "chat_models/googlevertexai": "chat_models/googlevertexai/index",
   "chat_models/googlevertexai/web": "chat_models/googlevertexai/web",
   "chat_models/googlepalm": "chat_models/googlepalm",
@@ -184,8 +177,6 @@ const entrypoints = {
   "chat_models/baiduwenxin": "chat_models/baiduwenxin",
   "chat_models/ollama": "chat_models/ollama",
   "chat_models/minimax": "chat_models/minimax",
-  "chat_models/yandex": "chat_models/yandex",
-  "chat_models/fake": "chat_models/fake",
   // schema
   schema: "schema/index",
   "schema/document": "schema/document",
@@ -254,7 +245,6 @@ const entrypoints = {
   "stores/message/planetscale": "stores/message/planetscale",
   "stores/message/xata": "stores/message/xata",
   // storage
-  "storage/encoder_backed": "storage/encoder_backed",
   "storage/in_memory": "storage/in_memory",
   "storage/ioredis": "storage/ioredis",
   "storage/vercel_kv": "storage/vercel_kv",
@@ -279,7 +269,6 @@ const entrypoints = {
   "experimental/llms/bittensor": "experimental/llms/bittensor",
   "experimental/hubs/makersuite/googlemakersuitehub":
     "experimental/hubs/makersuite/googlemakersuitehub",
-    "experimental/chains/violation_of_expectations": "experimental/chains/violation_of_expectations/index",
   // evaluation
   evaluation: "evaluation/index",
   // runnables
@@ -340,8 +329,6 @@ const requiresOptionalDependency = [
   "vectorstores/cassandra",
   "vectorstores/chroma",
   "vectorstores/cloudflare_vectorize",
-  "vectorstores/closevector/web",
-  "vectorstores/closevector/node",
   "vectorstores/googlevertexai",
   "vectorstores/elasticsearch",
   "vectorstores/hnswlib",
@@ -359,7 +346,6 @@ const requiresOptionalDependency = [
   "vectorstores/typeorm",
   "vectorstores/milvus",
   "vectorstores/myscale",
-  "vectorstores/neo4j_vector",
   "vectorstores/redis",
   "vectorstores/singlestore",
   "vectorstores/typesense",

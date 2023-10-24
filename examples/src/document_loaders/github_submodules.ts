@@ -2,7 +2,7 @@ import { GithubRepoLoader } from "langchain/document_loaders/web/github";
 
 export const run = async () => {
   const loader = new GithubRepoLoader(
-    "https://github.com/langchain-ai/langchainjs",
+    "https://github.com/hwchase17/langchainjs",
     {
       branch: "main",
       recursive: true,

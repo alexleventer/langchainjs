@@ -31,7 +31,7 @@ describe("GithubRepoLoader recursion", () => {
 
   test("Test recursion with GithubRepoLoader", async () => {
     const loader = new GithubRepoLoader(
-      "https://github.com/langchain-ai/langchainjs",
+      "https://github.com/hwchase17/langchainjs",
       {
         branch: "main",
         recursive: true,
@@ -51,7 +51,7 @@ describe("GithubRepoLoader recursion", () => {
   test("Expect an error if processSubmodules set without recursive with GithubRepoLoader", async () => {
     expect(
       () =>
-        new GithubRepoLoader("https://github.com/langchain-ai/langchainjs", {
+        new GithubRepoLoader("https://github.com/hwchase17/langchainjs", {
           branch: "main",
           recursive: false,
           processSubmodules: true,

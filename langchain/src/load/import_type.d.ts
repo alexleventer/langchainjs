@@ -121,12 +121,6 @@ export interface OptionalImportMap {
   "langchain/vectorstores/cloudflare_vectorize"?:
     | typeof import("../vectorstores/cloudflare_vectorize.js")
     | Promise<typeof import("../vectorstores/cloudflare_vectorize.js")>;
-  "langchain/vectorstores/closevector/web"?:
-    | typeof import("../vectorstores/closevector/web.js")
-    | Promise<typeof import("../vectorstores/closevector/web.js")>;
-  "langchain/vectorstores/closevector/node"?:
-    | typeof import("../vectorstores/closevector/node.js")
-    | Promise<typeof import("../vectorstores/closevector/node.js")>;
   "langchain/vectorstores/chroma"?:
     | typeof import("../vectorstores/chroma.js")
     | Promise<typeof import("../vectorstores/chroma.js")>;
@@ -172,9 +166,6 @@ export interface OptionalImportMap {
   "langchain/vectorstores/milvus"?:
     | typeof import("../vectorstores/milvus.js")
     | Promise<typeof import("../vectorstores/milvus.js")>;
-  "langchain/vectorstores/neo4j_vector"?:
-    | typeof import("../vectorstores/neo4j_vector.js")
-    | Promise<typeof import("../vectorstores/neo4j_vector.js")>;
   "langchain/vectorstores/typeorm"?:
     | typeof import("../vectorstores/typeorm.js")
     | Promise<typeof import("../vectorstores/typeorm.js")>;
@@ -216,10 +207,14 @@ export interface OptionalImportMap {
     | Promise<typeof import("../document_loaders/web/assemblyai.js")>;
   "langchain/document_loaders/web/azure_blob_storage_container"?:
     | typeof import("../document_loaders/web/azure_blob_storage_container.js")
-    | Promise<typeof import("../document_loaders/web/azure_blob_storage_container.js")>;
+    | Promise<
+        typeof import("../document_loaders/web/azure_blob_storage_container.js")
+      >;
   "langchain/document_loaders/web/azure_blob_storage_file"?:
     | typeof import("../document_loaders/web/azure_blob_storage_file.js")
-    | Promise<typeof import("../document_loaders/web/azure_blob_storage_file.js")>;
+    | Promise<
+        typeof import("../document_loaders/web/azure_blob_storage_file.js")
+      >;
   "langchain/document_loaders/web/cheerio"?:
     | typeof import("../document_loaders/web/cheerio.js")
     | Promise<typeof import("../document_loaders/web/cheerio.js")>;
@@ -435,16 +430,22 @@ export interface OptionalImportMap {
     | Promise<typeof import("../hub.js")>;
   "langchain/experimental/multimodal_embeddings/googlevertexai"?:
     | typeof import("../experimental/multimodal_embeddings/googlevertexai.js")
-    | Promise<typeof import("../experimental/multimodal_embeddings/googlevertexai.js")>;
+    | Promise<
+        typeof import("../experimental/multimodal_embeddings/googlevertexai.js")
+      >;
   "langchain/experimental/chat_models/anthropic_functions"?:
     | typeof import("../experimental/chat_models/anthropic_functions.js")
-    | Promise<typeof import("../experimental/chat_models/anthropic_functions.js")>;
+    | Promise<
+        typeof import("../experimental/chat_models/anthropic_functions.js")
+      >;
   "langchain/experimental/llms/bittensor"?:
     | typeof import("../experimental/llms/bittensor.js")
     | Promise<typeof import("../experimental/llms/bittensor.js")>;
   "langchain/experimental/hubs/makersuite/googlemakersuitehub"?:
     | typeof import("../experimental/hubs/makersuite/googlemakersuitehub.js")
-    | Promise<typeof import("../experimental/hubs/makersuite/googlemakersuitehub.js")>;
+    | Promise<
+        typeof import("../experimental/hubs/makersuite/googlemakersuitehub.js")
+      >;
 }
 
 export interface SecretMap {
@@ -490,8 +491,6 @@ export interface SecretMap {
   VECTARA_CUSTOMER_ID?: string;
   WRITER_API_KEY?: string;
   WRITER_ORG_ID?: string;
-  YC_API_KEY?: string;
-  YC_IAM_TOKEN?: string;
   ZAPIER_NLA_API_KEY?: string;
   ZEP_API_KEY?: string;
   ZEP_API_URL?: string;

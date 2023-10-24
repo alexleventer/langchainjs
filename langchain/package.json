@@ -136,9 +136,6 @@
     "llms/aleph_alpha.cjs",
     "llms/aleph_alpha.js",
     "llms/aleph_alpha.d.ts",
-    "llms/cloudflare_workersai.cjs",
-    "llms/cloudflare_workersai.js",
-    "llms/cloudflare_workersai.d.ts",
     "llms/cohere.cjs",
     "llms/cohere.js",
     "llms/cohere.d.ts",
@@ -181,12 +178,6 @@
     "llms/portkey.cjs",
     "llms/portkey.js",
     "llms/portkey.d.ts",
-    "llms/yandex.cjs",
-    "llms/yandex.js",
-    "llms/yandex.d.ts",
-    "llms/fake.cjs",
-    "llms/fake.js",
-    "llms/fake.d.ts",
     "prompts.cjs",
     "prompts.js",
     "prompts.d.ts",
@@ -211,12 +202,6 @@
     "vectorstores/cloudflare_vectorize.cjs",
     "vectorstores/cloudflare_vectorize.js",
     "vectorstores/cloudflare_vectorize.d.ts",
-    "vectorstores/closevector/web.cjs",
-    "vectorstores/closevector/web.js",
-    "vectorstores/closevector/web.d.ts",
-    "vectorstores/closevector/node.cjs",
-    "vectorstores/closevector/node.js",
-    "vectorstores/closevector/node.d.ts",
     "vectorstores/chroma.cjs",
     "vectorstores/chroma.js",
     "vectorstores/chroma.d.ts",
@@ -262,9 +247,6 @@
     "vectorstores/milvus.cjs",
     "vectorstores/milvus.js",
     "vectorstores/milvus.d.ts",
-    "vectorstores/neo4j_vector.cjs",
-    "vectorstores/neo4j_vector.js",
-    "vectorstores/neo4j_vector.d.ts",
     "vectorstores/prisma.cjs",
     "vectorstores/prisma.js",
     "vectorstores/prisma.d.ts",
@@ -451,9 +433,6 @@
     "chat_models/bedrock.cjs",
     "chat_models/bedrock.js",
     "chat_models/bedrock.d.ts",
-    "chat_models/cloudflare_workersai.cjs",
-    "chat_models/cloudflare_workersai.js",
-    "chat_models/cloudflare_workersai.d.ts",
     "chat_models/googlevertexai.cjs",
     "chat_models/googlevertexai.js",
     "chat_models/googlevertexai.d.ts",
@@ -475,12 +454,6 @@
     "chat_models/minimax.cjs",
     "chat_models/minimax.js",
     "chat_models/minimax.d.ts",
-    "chat_models/yandex.cjs",
-    "chat_models/yandex.js",
-    "chat_models/yandex.d.ts",
-    "chat_models/fake.cjs",
-    "chat_models/fake.js",
-    "chat_models/fake.d.ts",
     "schema.cjs",
     "schema.js",
     "schema.d.ts",
@@ -655,9 +628,6 @@
     "stores/message/xata.cjs",
     "stores/message/xata.js",
     "stores/message/xata.d.ts",
-    "storage/encoder_backed.cjs",
-    "storage/encoder_backed.js",
-    "storage/encoder_backed.d.ts",
     "storage/in_memory.cjs",
     "storage/in_memory.js",
     "storage/in_memory.d.ts",
@@ -709,9 +679,6 @@
     "experimental/hubs/makersuite/googlemakersuitehub.cjs",
     "experimental/hubs/makersuite/googlemakersuitehub.js",
     "experimental/hubs/makersuite/googlemakersuitehub.d.ts",
-    "experimental/chains/violation_of_expectations.cjs",
-    "experimental/chains/violation_of_expectations.js",
-    "experimental/chains/violation_of_expectations.d.ts",
     "evaluation.cjs",
     "evaluation.js",
     "evaluation.d.ts",
@@ -724,17 +691,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:langchain-ai/langchainjs.git"
+    "url": "git@github.com:hwchase17/langchainjs.git"
   },
   "scripts": {
     "build": "yarn clean && yarn build:esm && yarn build:cjs && node scripts/create-entrypoints.js && node scripts/check-tree-shaking.js",
-    "build:esm": "NODE_OPTIONS=--max-old-space-size=4096 tsc --outDir dist/ && rimraf dist/tests dist/**/tests",
-    "build:cjs": "NODE_OPTIONS=--max-old-space-size=4096 tsc --outDir dist-cjs/ -p tsconfig.cjs.json && node scripts/move-cjs-to-dist.js && rimraf dist-cjs",
+    "build:esm": "tsc --outDir dist/ && rimraf dist/tests dist/**/tests",
+    "build:cjs": "tsc --outDir dist-cjs/ -p tsconfig.cjs.json && node scripts/move-cjs-to-dist.js && rimraf dist-cjs",
     "build:watch": "node scripts/create-entrypoints.js && tsc --outDir dist/ --watch",
-    "lint": "NODE_OPTIONS=--max-old-space-size=4096 eslint src && dpdm --exit-code circular:1 --no-warning --no-tree src/*.ts src/**/*.ts",
+    "lint": "eslint src && dpdm --exit-code circular:1 --no-warning --no-tree src/*.ts src/**/*.ts",
     "lint:fix": "yarn lint --fix",
     "precommit": "lint-staged",
-    "clean": "rimraf dist/ && NODE_OPTIONS=--max-old-space-size=4096 node scripts/create-entrypoints.js pre",
+    "clean": "rimraf dist/ && node scripts/create-entrypoints.js pre",
     "prepack": "yarn build",
     "release": "release-it --only-version --config .release-it.json",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --testPathIgnorePatterns=\\.int\\.test.ts --testTimeout 30000 --maxWorkers=50%",
@@ -764,7 +731,7 @@
     "@elastic/elasticsearch": "^8.4.0",
     "@faker-js/faker": "^7.6.0",
     "@getmetal/metal-sdk": "^4.0.0",
-    "@getzep/zep-js": "^0.8.0",
+    "@getzep/zep-js": "^0.7.0",
     "@gomomento/sdk": "^1.41.2",
     "@gomomento/sdk-core": "^1.41.2",
     "@google-ai/generativelanguage": "^0.2.1",
@@ -807,7 +774,6 @@
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "@upstash/redis": "^1.20.6",
-    "@vercel/kv": "^0.2.3",
     "@vercel/postgres": "^0.5.0",
     "@writerai/writer-sdk": "^0.40.2",
     "@xata.io/client": "^0.25.1",
@@ -819,9 +785,6 @@
     "cassandra-driver": "^4.6.4",
     "cheerio": "^1.0.0-rc.12",
     "chromadb": "^1.5.3",
-    "closevector-common": "0.1.0-alpha.1",
-    "closevector-node": "0.1.0-alpha.10",
-    "closevector-web": "0.1.0-alpha.15",
     "cohere-ai": ">=6.0.0",
     "d3-dsv": "^2.0.0",
     "dotenv": "^16.0.3",
@@ -833,7 +796,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-no-instanceof": "^1.0.1",
     "eslint-plugin-prettier": "^4.2.1",
-    "faiss-node": "^0.5.1",
+    "faiss-node": "^0.3.0",
     "fast-xml-parser": "^4.2.7",
     "firebase-admin": "^11.9.0",
     "google-auth-library": "^8.9.0",
@@ -846,7 +809,7 @@
     "jest": "^29.5.0",
     "jest-environment-node": "^29.6.4",
     "jsdom": "^22.1.0",
-    "llmonitor": "^0.5.8",
+    "llmonitor": "^0.5.4",
     "lodash": "^4.17.21",
     "mammoth": "^1.5.1",
     "ml-matrix": "^6.10.4",
@@ -859,7 +822,7 @@
     "peggy": "^3.0.2",
     "pg": "^8.11.0",
     "pg-copy-streams": "^6.0.5",
-    "pickleparser": "^0.2.1",
+    "pickleparser": "^0.1.0",
     "playwright": "^1.32.1",
     "portkey-ai": "^0.1.11",
     "prettier": "^2.8.3",
@@ -899,7 +862,7 @@
     "@cloudflare/ai": "^1.0.12",
     "@elastic/elasticsearch": "^8.4.0",
     "@getmetal/metal-sdk": "*",
-    "@getzep/zep-js": "^0.8.0",
+    "@getzep/zep-js": "^0.7.0",
     "@gomomento/sdk": "^1.41.2",
     "@gomomento/sdk-core": "^1.41.2",
     "@gomomento/sdk-web": "^1.41.2",
@@ -923,7 +886,6 @@
     "@tensorflow/tfjs-converter": "*",
     "@tensorflow/tfjs-core": "*",
     "@upstash/redis": "^1.20.6",
-    "@vercel/kv": "^0.2.3",
     "@vercel/postgres": "^0.5.0",
     "@writerai/writer-sdk": "^0.40.2",
     "@xata.io/client": "^0.25.1",
@@ -935,13 +897,10 @@
     "cassandra-driver": "^4.6.4",
     "cheerio": "^1.0.0-rc.12",
     "chromadb": "*",
-    "closevector-common": "0.1.0-alpha.1",
-    "closevector-node": "0.1.0-alpha.10",
-    "closevector-web": "0.1.0-alpha.16",
     "cohere-ai": ">=6.0.0",
     "d3-dsv": "^2.0.0",
     "epub2": "^3.0.1",
-    "faiss-node": "^0.5.1",
+    "faiss-node": "^0.3.0",
     "fast-xml-parser": "^4.2.7",
     "firebase-admin": "^11.9.0",
     "google-auth-library": "^8.9.0",
@@ -951,7 +910,7 @@
     "ignore": "^5.2.0",
     "ioredis": "^5.3.2",
     "jsdom": "*",
-    "llmonitor": "^0.5.8",
+    "llmonitor": "*",
     "lodash": "^4.17.21",
     "mammoth": "*",
     "mongodb": "^5.2.0",
@@ -963,7 +922,7 @@
     "peggy": "^3.0.2",
     "pg": "^8.11.0",
     "pg-copy-streams": "^6.0.5",
-    "pickleparser": "^0.2.1",
+    "pickleparser": "^0.1.0",
     "playwright": "^1.32.1",
     "portkey-ai": "^0.1.11",
     "puppeteer": "^19.7.2",
@@ -1096,9 +1055,6 @@
     "@upstash/redis": {
       "optional": true
     },
-    "@vercel/kv": {
-      "optional": true
-    },
     "@vercel/postgres": {
       "optional": true
     },
@@ -1130,15 +1086,6 @@
       "optional": true
     },
     "chromadb": {
-      "optional": true
-    },
-    "closevector-common": {
-      "optional": true
-    },
-    "closevector-node": {
-      "optional": true
-    },
-    "closevector-web": {
       "optional": true
     },
     "cohere-ai": {
@@ -1520,11 +1467,6 @@
       "import": "./llms/aleph_alpha.js",
       "require": "./llms/aleph_alpha.cjs"
     },
-    "./llms/cloudflare_workersai": {
-      "types": "./llms/cloudflare_workersai.d.ts",
-      "import": "./llms/cloudflare_workersai.js",
-      "require": "./llms/cloudflare_workersai.cjs"
-    },
     "./llms/cohere": {
       "types": "./llms/cohere.d.ts",
       "import": "./llms/cohere.js",
@@ -1595,16 +1537,6 @@
       "import": "./llms/portkey.js",
       "require": "./llms/portkey.cjs"
     },
-    "./llms/yandex": {
-      "types": "./llms/yandex.d.ts",
-      "import": "./llms/yandex.js",
-      "require": "./llms/yandex.cjs"
-    },
-    "./llms/fake": {
-      "types": "./llms/fake.d.ts",
-      "import": "./llms/fake.js",
-      "require": "./llms/fake.cjs"
-    },
     "./prompts": {
       "types": "./prompts.d.ts",
       "import": "./prompts.js",
@@ -1644,16 +1576,6 @@
       "types": "./vectorstores/cloudflare_vectorize.d.ts",
       "import": "./vectorstores/cloudflare_vectorize.js",
       "require": "./vectorstores/cloudflare_vectorize.cjs"
-    },
-    "./vectorstores/closevector/web": {
-      "types": "./vectorstores/closevector/web.d.ts",
-      "import": "./vectorstores/closevector/web.js",
-      "require": "./vectorstores/closevector/web.cjs"
-    },
-    "./vectorstores/closevector/node": {
-      "types": "./vectorstores/closevector/node.d.ts",
-      "import": "./vectorstores/closevector/node.js",
-      "require": "./vectorstores/closevector/node.cjs"
     },
     "./vectorstores/chroma": {
       "types": "./vectorstores/chroma.d.ts",
@@ -1729,11 +1651,6 @@
       "types": "./vectorstores/milvus.d.ts",
       "import": "./vectorstores/milvus.js",
       "require": "./vectorstores/milvus.cjs"
-    },
-    "./vectorstores/neo4j_vector": {
-      "types": "./vectorstores/neo4j_vector.d.ts",
-      "import": "./vectorstores/neo4j_vector.js",
-      "require": "./vectorstores/neo4j_vector.cjs"
     },
     "./vectorstores/prisma": {
       "types": "./vectorstores/prisma.d.ts",
@@ -2045,11 +1962,6 @@
       "import": "./chat_models/bedrock.js",
       "require": "./chat_models/bedrock.cjs"
     },
-    "./chat_models/cloudflare_workersai": {
-      "types": "./chat_models/cloudflare_workersai.d.ts",
-      "import": "./chat_models/cloudflare_workersai.js",
-      "require": "./chat_models/cloudflare_workersai.cjs"
-    },
     "./chat_models/googlevertexai": {
       "types": "./chat_models/googlevertexai.d.ts",
       "import": "./chat_models/googlevertexai.js",
@@ -2084,16 +1996,6 @@
       "types": "./chat_models/minimax.d.ts",
       "import": "./chat_models/minimax.js",
       "require": "./chat_models/minimax.cjs"
-    },
-    "./chat_models/yandex": {
-      "types": "./chat_models/yandex.d.ts",
-      "import": "./chat_models/yandex.js",
-      "require": "./chat_models/yandex.cjs"
-    },
-    "./chat_models/fake": {
-      "types": "./chat_models/fake.d.ts",
-      "import": "./chat_models/fake.js",
-      "require": "./chat_models/fake.cjs"
     },
     "./schema": {
       "types": "./schema.d.ts",
@@ -2385,11 +2287,6 @@
       "import": "./stores/message/xata.js",
       "require": "./stores/message/xata.cjs"
     },
-    "./storage/encoder_backed": {
-      "types": "./storage/encoder_backed.d.ts",
-      "import": "./storage/encoder_backed.js",
-      "require": "./storage/encoder_backed.cjs"
-    },
     "./storage/in_memory": {
       "types": "./storage/in_memory.d.ts",
       "import": "./storage/in_memory.js",
@@ -2474,11 +2371,6 @@
       "types": "./experimental/hubs/makersuite/googlemakersuitehub.d.ts",
       "import": "./experimental/hubs/makersuite/googlemakersuitehub.js",
       "require": "./experimental/hubs/makersuite/googlemakersuitehub.cjs"
-    },
-    "./experimental/chains/violation_of_expectations": {
-      "types": "./experimental/chains/violation_of_expectations.d.ts",
-      "import": "./experimental/chains/violation_of_expectations.js",
-      "require": "./experimental/chains/violation_of_expectations.cjs"
     },
     "./evaluation": {
       "types": "./evaluation.d.ts",

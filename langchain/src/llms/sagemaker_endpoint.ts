@@ -167,31 +167,26 @@ export class SageMakerEndpoint extends LLM<BaseLLMCallOptions> {
    * Calls the SageMaker endpoint and retrieves the result.
    * @param {string} prompt The input prompt.
    * @param {this["ParsedCallOptions"]} options Parsed call options.
-   * @param {CallbackManagerForLLMRun} runManager Optional run manager.
+   * @param {CallbackManagerForLLMRun} _runManager Optional run manager.
    * @returns {Promise<string>} A promise that resolves to the generated string.
    */
   /** @ignore */
   async _call(
     prompt: string,
     options: this["ParsedCallOptions"],
-    runManager?: CallbackManagerForLLMRun
+    _runManager?: CallbackManagerForLLMRun
   ): Promise<string> {
     return this.streaming
-      ? await this.streamingCall(prompt, options, runManager)
+      ? await this.streamingCall(prompt, options)
       : await this.noStreamingCall(prompt, options);
   }
 
   private async streamingCall(
     prompt: string,
-    options: this["ParsedCallOptions"],
-    runManager?: CallbackManagerForLLMRun
+    options: this["ParsedCallOptions"]
   ): Promise<string> {
     const chunks = [];
-    for await (const chunk of this._streamResponseChunks(
-      prompt,
-      options,
-      runManager
-    )) {
+    for await (const chunk of this._streamResponseChunks(prompt, options)) {
       chunks.push(chunk.text);
     }
     return chunks.join("");
@@ -234,8 +229,7 @@ export class SageMakerEndpoint extends LLM<BaseLLMCallOptions> {
    */
   async *_streamResponseChunks(
     prompt: string,
-    options: this["ParsedCallOptions"],
-    runManager?: CallbackManagerForLLMRun
+    options: this["ParsedCallOptions"]
   ): AsyncGenerator<GenerationChunk> {
     const body = await this.contentHandler.transformInput(
       prompt,
@@ -262,17 +256,15 @@ export class SageMakerEndpoint extends LLM<BaseLLMCallOptions> {
 
     for await (const chunk of stream.Body) {
       if (chunk.PayloadPart && chunk.PayloadPart.Bytes) {
-        const text = await this.contentHandler.transformOutput(
-          chunk.PayloadPart.Bytes
-        );
         yield new GenerationChunk({
-          text,
+          text: await this.contentHandler.transformOutput(
+            chunk.PayloadPart.Bytes
+          ),
           generationInfo: {
             ...chunk,
             response: undefined,
           },
         });
-        await runManager?.handleLLMNewToken(text);
       } else if (chunk.InternalStreamFailure) {
         throw new Error(chunk.InternalStreamFailure.message);
       } else if (chunk.ModelStreamError) {

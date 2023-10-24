@@ -91,12 +91,11 @@ const parseInput = (rawInput: Record<string, unknown>) => {
 const parseOutput = (rawOutput: Record<string, unknown>) => {
   if (!rawOutput) return null;
 
-  const { text, output, answer, result } = rawOutput;
+  const { text, output, answer } = rawOutput;
 
   if (text) return text;
   if (answer) return answer;
   if (output) return output;
-  if (result) return result;
 
   return rawOutput;
 };
@@ -153,16 +152,18 @@ export class LLMonitorHandler
       ...(metadata || {}),
     };
 
-    const { model, model_name, modelName, userId, userProps, ...rest } = params;
+    const name: string =
+      params?.model || params?.name || params?.model_name || llm.id.at(-1);
 
-    const name = model || modelName || model_name || llm.id.at(-1);
+    const userId = params?.userId || undefined;
+    const userProps = params?.userProps || undefined;
 
     await this.monitor.trackEvent("llm", "start", {
       runId,
       parentRunId,
       name,
       input: convertToLLMonitorMessages(prompts),
-      extra: rest,
+      extra: params,
       userId,
       userProps,
       tags,
@@ -184,17 +185,18 @@ export class LLMonitorHandler
       ...(metadata || {}),
     };
 
-    // Expand them so they're excluded from the "extra" field
-    const { model, model_name, modelName, userId, userProps, ...rest } = params;
+    const name =
+      params?.model || params?.name || params?.model_name || llm.id.at(-1);
 
-    const name = model || modelName || model_name || llm.id.at(-1);
+    const userId = params?.userId || undefined;
+    const userProps = params?.userProps || undefined;
 
     await this.monitor.trackEvent("llm", "start", {
       runId,
       parentRunId,
       name,
       input: convertToLLMonitorMessages(messages),
-      extra: rest,
+      extra: params,
       userId,
       userProps,
       tags,
@@ -230,23 +232,24 @@ export class LLMonitorHandler
     tags?: string[],
     metadata?: KVMap
   ): Promise<void> {
-    const { agentName, userId, userProps, ...rest } = metadata || {};
-
     // allow the user to specify an agent name
-    const name = agentName || chain.id.at(-1);
+    const chainName = chain.id.at(-1) as string;
+    const name = (metadata?.agentName ?? chainName) as string;
 
     // Attempt to automatically detect if this is an agent or chain
     const runType =
-      agentName || ["AgentExecutor", "PlanAndExecute"].includes(name)
+      metadata?.agentName ||
+      ["AgentExecutor", "PlanAndExecute"].includes(chainName)
         ? "agent"
         : "chain";
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { agentName, ...rest } = metadata || {};
 
     await this.monitor.trackEvent(runType, "start", {
       runId,
       parentRunId,
       name,
-      userId,
-      userProps,
       input: parseInput(inputs) as cJSON,
       extra: rest,
       tags,
@@ -276,17 +279,12 @@ export class LLMonitorHandler
     tags?: string[],
     metadata?: KVMap
   ): Promise<void> {
-    const { toolName, userId, userProps, ...rest } = metadata || {};
-    const name = toolName || tool.id.at(-1);
-
     await this.monitor.trackEvent("tool", "start", {
       runId,
       parentRunId,
-      name,
-      userId,
-      userProps,
+      name: tool.id[tool.id.length - 1],
       input,
-      extra: rest,
+      extra: metadata,
       tags,
       runtime: "langchain-js",
     });
