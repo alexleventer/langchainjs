@@ -35,7 +35,9 @@ export interface CassandraLibArgs extends DseClientOptions {
  * texts or documents.
  */
 export class CassandraStore extends VectorStore {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   declare FilterType: Record<string, any>;
+
   private client: CassandraClient;
 
   private readonly dimensions: number;
@@ -317,8 +319,8 @@ export class CassandraStore extends VectorStore {
    */
   private buildSearchQuery(
     query: number[],
-    k: number = 1,
-    filter?: this["FilterType"]
+    k = 1,
+    filter: this["FilterType"] | undefined = undefined
   ): string {
     const whereClause = filter ? this.buildWhereClause(filter) : "";
 
