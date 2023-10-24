@@ -9385,6 +9385,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"asap@npm:~2.0.3":
+  version: 2.0.6
+  resolution: "asap@npm:2.0.6"
+  checksum: b296c92c4b969e973260e47523207cd5769abd27c245a68c26dc7a0fe8053c55bb04360237cb51cab1df52be939da77150ace99ad331fb7fb13b3423ed73ff3d
+  languageName: node
+  linkType: hard
+
+"assemblyai@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "assemblyai@npm:2.0.2"
+  dependencies:
+    axios: ^1.4.0
+    ws: ^8.13.0
+  checksum: 474195ee9706f20038d951d65bb5dba45b60a7e39503c7a1a93086c01cc7d07a3e82e74fca7c501b7f55e75438bfa30f281b1fedb82e0dd77d2bb9ca0642e151
+  languageName: node
+  linkType: hard
+
+"ast-types-flow@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "ast-types-flow@npm:0.0.7"
+  checksum: a26dcc2182ffee111cad7c471759b0bda22d3b7ebacf27c348b22c55f16896b18ab0a4d03b85b4020dce7f3e634b8f00b593888f622915096ea1927fa51866c4
+  languageName: node
+  linkType: hard
+
 "ast-types@npm:^0.13.2":
   version: 0.13.4
   resolution: "ast-types@npm:0.13.4"
@@ -15340,7 +15364,8 @@ __metadata:
     "@zilliz/milvus2-sdk-node": ">=2.2.11"
     ansi-styles: ^5.0.0
     apify-client: ^2.7.1
-    axios: 0.26.0
+    assemblyai: ^2.0.2
+    axios: ^0.26.0
     binary-extensions: ^2.2.0
     camelcase: 6
     cassandra-driver: ^4.6.4
@@ -15470,6 +15495,8 @@ __metadata:
     "@xenova/transformers": ^2.5.4
     "@zilliz/milvus2-sdk-node": ">=2.2.7"
     apify-client: ^2.7.1
+    assemblyai: ^2.0.2
+    axios: "*"
     cassandra-driver: ^4.6.4
     cheerio: ^1.0.0-rc.12
     chromadb: "*"
@@ -15603,6 +15630,10 @@ __metadata:
     "@zilliz/milvus2-sdk-node":
       optional: true
     apify-client:
+      optional: true
+    assemblyai:
+      optional: true
+    axios:
       optional: true
     cassandra-driver:
       optional: true

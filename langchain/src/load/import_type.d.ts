@@ -207,10 +207,14 @@ export interface OptionalImportMap {
     | Promise<typeof import("../document_loaders/web/assemblyai.js")>;
   "langchain/document_loaders/web/azure_blob_storage_container"?:
     | typeof import("../document_loaders/web/azure_blob_storage_container.js")
-    | Promise<typeof import("../document_loaders/web/azure_blob_storage_container.js")>;
+    | Promise<
+        typeof import("../document_loaders/web/azure_blob_storage_container.js")
+      >;
   "langchain/document_loaders/web/azure_blob_storage_file"?:
     | typeof import("../document_loaders/web/azure_blob_storage_file.js")
-    | Promise<typeof import("../document_loaders/web/azure_blob_storage_file.js")>;
+    | Promise<
+        typeof import("../document_loaders/web/azure_blob_storage_file.js")
+      >;
   "langchain/document_loaders/web/cheerio"?:
     | typeof import("../document_loaders/web/cheerio.js")
     | Promise<typeof import("../document_loaders/web/cheerio.js")>;
@@ -412,6 +416,12 @@ export interface OptionalImportMap {
   "langchain/storage/ioredis"?:
     | typeof import("../storage/ioredis.js")
     | Promise<typeof import("../storage/ioredis.js")>;
+  "langchain/storage/vercel_kv"?:
+    | typeof import("../storage/vercel_kv.js")
+    | Promise<typeof import("../storage/vercel_kv.js")>;
+  "langchain/storage/upstash_redis"?:
+    | typeof import("../storage/upstash_redis.js")
+    | Promise<typeof import("../storage/upstash_redis.js")>;
   "langchain/graphs/neo4j_graph"?:
     | typeof import("../graphs/neo4j_graph.js")
     | Promise<typeof import("../graphs/neo4j_graph.js")>;
@@ -420,16 +430,22 @@ export interface OptionalImportMap {
     | Promise<typeof import("../hub.js")>;
   "langchain/experimental/multimodal_embeddings/googlevertexai"?:
     | typeof import("../experimental/multimodal_embeddings/googlevertexai.js")
-    | Promise<typeof import("../experimental/multimodal_embeddings/googlevertexai.js")>;
+    | Promise<
+        typeof import("../experimental/multimodal_embeddings/googlevertexai.js")
+      >;
   "langchain/experimental/chat_models/anthropic_functions"?:
     | typeof import("../experimental/chat_models/anthropic_functions.js")
-    | Promise<typeof import("../experimental/chat_models/anthropic_functions.js")>;
+    | Promise<
+        typeof import("../experimental/chat_models/anthropic_functions.js")
+      >;
   "langchain/experimental/llms/bittensor"?:
     | typeof import("../experimental/llms/bittensor.js")
     | Promise<typeof import("../experimental/llms/bittensor.js")>;
   "langchain/experimental/hubs/makersuite/googlemakersuitehub"?:
     | typeof import("../experimental/hubs/makersuite/googlemakersuitehub.js")
-    | Promise<typeof import("../experimental/hubs/makersuite/googlemakersuitehub.js")>;
+    | Promise<
+        typeof import("../experimental/hubs/makersuite/googlemakersuitehub.js")
+      >;
 }
 
 export interface SecretMap {

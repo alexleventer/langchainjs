@@ -138,6 +138,8 @@ export const optionalImportEntrypoints = [
   "langchain/stores/message/planetscale",
   "langchain/stores/message/xata",
   "langchain/storage/ioredis",
+  "langchain/storage/vercel_kv",
+  "langchain/storage/upstash_redis",
   "langchain/graphs/neo4j_graph",
   "langchain/hub",
   "langchain/experimental/multimodal_embeddings/googlevertexai",

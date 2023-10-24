@@ -1,6 +1,6 @@
 {
   "name": "langchain",
-  "version": "0.0.166",
+  "version": "0.0.170",
   "description": "Typescript bindings for langchain",
   "type": "module",
   "engines": {
@@ -31,6 +31,9 @@
     "agents/toolkits/sql.cjs",
     "agents/toolkits/sql.js",
     "agents/toolkits/sql.d.ts",
+    "agents/format_scratchpad.cjs",
+    "agents/format_scratchpad.js",
+    "agents/format_scratchpad.d.ts",
     "base_language.cjs",
     "base_language.js",
     "base_language.d.ts",
@@ -631,6 +634,12 @@
     "storage/ioredis.cjs",
     "storage/ioredis.js",
     "storage/ioredis.d.ts",
+    "storage/vercel_kv.cjs",
+    "storage/vercel_kv.js",
+    "storage/vercel_kv.d.ts",
+    "storage/upstash_redis.cjs",
+    "storage/upstash_redis.js",
+    "storage/upstash_redis.d.ts",
     "graphs/neo4j_graph.cjs",
     "graphs/neo4j_graph.js",
     "graphs/neo4j_graph.d.ts",
@@ -771,7 +780,8 @@
     "@xenova/transformers": "^2.5.4",
     "@zilliz/milvus2-sdk-node": ">=2.2.11",
     "apify-client": "^2.7.1",
-    "axios": "0.26.0",
+    "assemblyai": "^2.0.2",
+    "axios": "^0.26.0",
     "cassandra-driver": "^4.6.4",
     "cheerio": "^1.0.0-rc.12",
     "chromadb": "^1.5.3",
@@ -882,6 +892,7 @@
     "@xenova/transformers": "^2.5.4",
     "@zilliz/milvus2-sdk-node": ">=2.2.7",
     "apify-client": "^2.7.1",
+    "assemblyai": "^2.0.2",
     "axios": "*",
     "cassandra-driver": "^4.6.4",
     "cheerio": "^1.0.0-rc.12",
@@ -1060,6 +1071,9 @@
       "optional": true
     },
     "apify-client": {
+      "optional": true
+    },
+    "assemblyai": {
       "optional": true
     },
     "axios": {
@@ -1277,6 +1291,11 @@
       "types": "./agents/toolkits/sql.d.ts",
       "import": "./agents/toolkits/sql.js",
       "require": "./agents/toolkits/sql.cjs"
+    },
+    "./agents/format_scratchpad": {
+      "types": "./agents/format_scratchpad.d.ts",
+      "import": "./agents/format_scratchpad.js",
+      "require": "./agents/format_scratchpad.cjs"
     },
     "./base_language": {
       "types": "./base_language.d.ts",
@@ -2277,6 +2296,16 @@
       "types": "./storage/ioredis.d.ts",
       "import": "./storage/ioredis.js",
       "require": "./storage/ioredis.cjs"
+    },
+    "./storage/vercel_kv": {
+      "types": "./storage/vercel_kv.d.ts",
+      "import": "./storage/vercel_kv.js",
+      "require": "./storage/vercel_kv.cjs"
+    },
+    "./storage/upstash_redis": {
+      "types": "./storage/upstash_redis.d.ts",
+      "import": "./storage/upstash_redis.js",
+      "require": "./storage/upstash_redis.cjs"
     },
     "./graphs/neo4j_graph": {
       "types": "./graphs/neo4j_graph.d.ts",
